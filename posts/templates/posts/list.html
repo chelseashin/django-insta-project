@@ -2,10 +2,11 @@
 {% block content %}
 <h1>LIST</h1>
 <hr>
-{% for post in posts %}
-    {% include 'posts/_post.html' %}
-{% empty %}
-    <p>작성된 글이 없습니다.</p>
-{% endfor %}
-
+<div class="d-inline-flex flex-wrap justify-content-center">
+    {% for post in posts %}
+        {% include 'posts/_post.html' %}
+    {% empty %}
+        <p>작성된 글이 없습니다.</p>
+    {% endfor %}
+</div>
 {% endblock %}
