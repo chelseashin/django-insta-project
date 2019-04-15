@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+
+<h2>LogIn</h2>
+<form action='' method='POST'>
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons submit="로그인" reset="Cancel"%} {% endbuttons %}
+</form>
+{% endblock %}

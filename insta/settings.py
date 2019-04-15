@@ -31,7 +31,9 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'accounts.apps.AccountsConfig',
     'posts.apps.PostsConfig',
+    'crispy_forms',
     'bootstrap4',
     'imagekit',
     'django.contrib.admin',
@@ -123,3 +125,5 @@ USE_TZ = False
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

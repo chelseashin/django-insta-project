@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from .models import Post, Image
 from .forms import PostForm, ImageForm
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 # INDEX
@@ -13,11 +14,14 @@ def list(request):
     return render(request, 'posts/list.html', context)
     
 # CREATE
+@login_required
 def create(request):
     if request.method == "POST":
         post_form = PostForm(request.POST)
         if post_form.is_valid():
-            post = post_form.save()    # 게시글 내용 처리 끝
+            post = post_form.save(commit=False)    # 게시글 내용 처리 끝
+            post.user = request.user   # 유저와 함께 저장
+            post.save()
             # 이미지가 여러개 돌기 때문에
             for image in request.FILES.getlist('file'):
                 request.FILES['file'] = image
@@ -37,8 +41,13 @@ def create(request):
     return render(request, 'posts/form.html', context)
     
 # UPDATE
+@login_required
 def update(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
+    
+    if post.user != request.user:
+        return redirect('post:list')
+    
     if request.method == 'POST':
         post_form = PostForm(request.POST, instance=post)
         if post_form.is_valid():
@@ -52,8 +61,13 @@ def update(request, post_pk):
     return render(request, 'posts/form.html', context)
     
 # DELETE
+@login_required
 def delete(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
+    
+    if post.user != request.user:
+        return redirect('post:list')
+    
     if request.method == 'POST':
         post.delete()
     return redirect('posts:list')

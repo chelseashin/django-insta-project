@@ -13,6 +13,14 @@
 <body>
     <!--페이지 모듈화 - navbar-->
     {% include 'posts/_nav.html' %}
+    
+    <!--로그인 로그아웃 확인-->
+    {% if user.is_authenticated %}
+        <p>{{ user.username }}님, 반갑습니다!</p>
+    {% else %}
+        <p>활동하려면 로그인해주세요!</p>
+    {% endif %}
+    
     <div class="container">
     {% block content %}
      
