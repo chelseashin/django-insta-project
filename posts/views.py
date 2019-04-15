@@ -1,15 +1,18 @@
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
-from .models import Post, Image
-from .forms import PostForm, ImageForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from .forms import PostForm, ImageForm, CommentForm
+from .models import Post, Image, Comment
 
 # Create your views here.
 # INDEX
 def list(request):
     # posts = Post.objects.order_by('-pk')     # 게시글이 없을 때 없다고 표시하고 싶을 때는 이렇게 데이터 받아옴
     posts = get_list_or_404(Post.objects.order_by('-pk'))
+    comment_form = CommentForm
     context = {
         'posts': posts,
+        'comment_form': comment_form,
     }
     return render(request, 'posts/list.html', context)
     
@@ -70,4 +73,25 @@ def delete(request, post_pk):
     
     if request.method == 'POST':
         post.delete()
+    return redirect('posts:list')
+    
+@login_required
+@require_POST
+def comment_create(request, post_pk):
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        # comment 를 바로 저장하지 않고 현재 user, post_pk 정보를 넣어서 저장
+         comment = form.save(commit=False)    # 들어올 값 더 있음
+         comment.user = request.user
+         comment.post_id = post_pk
+         comment.save()
+    return redirect('posts:list')
+    
+@login_required
+@require_POST
+def comment_delete(request, post_pk, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    if request.user != comment.user:
+        return redirect('posts:list')
+    comment.delete()
     return redirect('posts:list')
