@@ -1,40 +1,44 @@
 <!-- 맨 위에 고정하는 sticky-top 추가-->
-<nav class="sticky-top navbar navbar-expand-lg navbar-light bg-light">
+<nav class="sticky-top navbar navbar-expand-lg navbar-dark bg-dark px-5">
   <a class="navbar-brand" href="{% url 'posts:list' %}"><i class="fab fa-instagram"> | Instagram</i>
   </a>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+  </button> {% if user.is_authenticated %}
+  <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+    <div></div>
     <ul class="navbar-nav">
-      {% if user.is_authenticated %}
-        <!--<p>{{ user.username }}님, 반갑습니다!</p>-->
-        <!--새 글 작성-->
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'posts:create' %}">New</a>
-        </li>
-  
-        <li class="nav-item">
-          <a class="nav-link" href="#">MyPage</a>
-        </li>
-        <!--logout-->
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'accounts:logout' %}">LogOut</a>
-        </li>
-        {% else %}
-        <!--<p>활동하려면 로그인해주세요!</p>-->
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'posts:create' %}">New</a>
-        </li>
-        <!--sign up-->
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'accounts:signup' %}">SignUp</a>
-        </li>
-        <!--login-->
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'accounts:login' %}">LogIn</a>
-        </li>
+      <li class="nav-item">
+        <span class="nav-text text-light">{{ user.username }}님, 반갑습니다!</span>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      <!--새 글 작성-->
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'posts:create' %}">New</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'people' user.username %}">MyPage</a>
+      </li>
+      <!--logout-->
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'accounts:logout' %}">LogOut</a>
+      </li>
+      {% else %}
+      <!--<p>활동하려면 로그인해주세요!</p>-->
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'posts:create' %}">New</a>
+      </li>
+      <!--sign up-->
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'accounts:signup' %}">SignUp</a>
+      </li>
+      <!--login-->
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'accounts:login' %}">LogIn</a>
+      </li>
       {% endif %}
     </ul>
   </div>
