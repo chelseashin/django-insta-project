@@ -1,15 +1,28 @@
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.db.models import Q
+# from itertools import chain
 from .forms import PostForm, ImageForm, CommentForm
 from .models import Post, Image, Comment
 
 # Create your views here.
 # INDEX
 def list(request):
-    # posts = Post.objects.order_by('-pk')     # 게시글이 없을 때 없다고 표시하고 싶을 때는 이렇게 데이터 받아옴
-    posts = get_list_or_404(Post.objects.order_by('-pk'))
-    comment_form = CommentForm
+    # 1 - Q objects 방식으로 하는 것이 좋음.
+    followings = request.user.followings.all()
+    posts = Post.objects.filter(Q(user__in=followings) | Q(user=request.user.id)).order_by('-pk')
+    
+    # 2
+    # followings = request.user.followings.all()
+    # chain_followings = chain(follwings, [request.user])
+    # posts = Post.objects.filter(Q(user__in=chain_followings).order_by('-pk')
+    
+    # posts = Post.objects.filter(user__in=request.user.followings.all()).order_by('-pk')    # 내가 팔로잉하고있는 모든 유저
+    # posts = Post.objects.order_by('-pk')     # 기본. 게시글이 없을 때 없다고 표시하고 싶을 때는 이렇게 데이터 받아옴
+    # posts = get_list_or_404(Post.objects.order_by('-pk'))
+    
+    comment_form = CommentForm()
     context = {
         'posts': posts,
         'comment_form': comment_form,
@@ -115,3 +128,15 @@ def like(request, post_pk):
     # else:
     #     post.like_users.add(request.user)
     # return redirect('posts:list')
+    
+# 모든 유저들의 글을 볼 수 있게 하기 위해
+@login_required
+def explore(request):
+    posts = Post.objects.order_by('-pk')
+    # posts = Post.objects.exclude(user=request.user).order_by('-pk')     # 나말고 모든 사람들의 글을 볼 수 있음
+    comment_form = CommentForm()
+    context = {
+        'posts': posts, 
+        'comment_form': comment_form,
+    }
+    return render(request, 'posts/explore.html', context)
