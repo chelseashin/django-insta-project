@@ -7,7 +7,8 @@ from django.conf import settings
 class Post(models.Model):
     # user : post 를 1:N 관계로 설정
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    # 게시글 입장에서 나를 좋아요 한 유저들
+    # user.post_set.all() - 게시글? 좋아요 한 글?
+    # 게시글 입장에서 나를 좋아요 한 유저들 - like_users : 변수 명시적으로 정함
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_posts', blank=True)
     content = models.TextField()
     # image = models.ImageField(blank=True)
