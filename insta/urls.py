@@ -21,6 +21,7 @@ from accounts import views as accounts_views
 
 
 urlpatterns = [
+    path('accounts/', include('allauth.urls')),
     path('accounts/', include('accounts.urls')),
     path('posts/', include('posts.urls')),
     path('admin/', admin.site.urls),

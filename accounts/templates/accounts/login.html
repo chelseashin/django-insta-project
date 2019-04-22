@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
+<!--for kakao login-->
+{% load socialaccount %}
 
 {% block content %}
 <h2>LogIn</h2>
 <form action='' method='POST'>
     {% csrf_token %}
     {% bootstrap_form form %}
-    {% buttons submit="LogIn" reset="Cancel"%} {% endbuttons %}
+    {% buttons submit="LogIn" reset="Cancel"%}{% endbuttons %}
 </form>
+
+<a href="{% provider_login_url 'kakao' method='oauth2' %}" class="btn btn-warning">카카오로그인</a>
 {% endblock %}
