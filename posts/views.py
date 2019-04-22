@@ -4,10 +4,11 @@ from django.views.decorators.http import require_POST
 from django.db.models import Q
 # from itertools import chain
 from .forms import PostForm, ImageForm, CommentForm
-from .models import Post, Image, Comment
+from .models import Post, Image, Comment, Hashtag
 
 # Create your views here.
 # INDEX
+@login_required
 def list(request):
     # 1 - Q objects 방식으로 하는 것이 좋음.
     followings = request.user.followings.all()
@@ -38,6 +39,15 @@ def create(request):
             post = post_form.save(commit=False)    # 게시글 내용 처리 끝
             post.user = request.user   # 유저와 함께 저장
             post.save()
+            # hashtag - post.save()가 된 이후에 hashtag 코드가 와야 함.
+            # 1. 게시글을 순회하면서 띄어쓰기를 잘라야 함
+            # 2. 자른 단어가 '#'로 시작하는가?
+            # 3. 이 해시태그가 기존 해시태그에 있는 건지? 없다면 더 안 만들어도 됨.
+            for word in post.content.split():
+                if word[0] == "#":    # if word.startswith('#'):    # django style
+                    hashtag = Hashtag.objects.get_or_create(content=word)
+                    post.hashtags.add(hashtag[0])
+                        
             # 이미지가 여러개 돌기 때문에
             for image in request.FILES.getlist('file'):
                 request.FILES['file'] = image
@@ -67,7 +77,13 @@ def update(request, post_pk):
     if request.method == 'POST':
         post_form = PostForm(request.POST, instance=post)
         if post_form.is_valid():
-            post_form.save()
+            post = post_form.save()    # 변수에 저장
+            # hashtag update - 해시태그 수정하면 모든 해시태그 삭제하고 새로 만듦.
+            post.hashtags.clear()
+            for word in post.content.split():
+                if word[0] == "#":    # if word.startswith('#'):    # django style
+                    hashtag = Hashtag.objects.get_or_create(content=word)
+                    post.hashtags.add(hashtag[0])
             return redirect('posts:list')
     else:
         post_form = PostForm(instance=post)    # 위의 인스턴스 값 받아옴
@@ -94,9 +110,9 @@ def comment_create(request, post_pk):
     form = CommentForm(request.POST)
     if form.is_valid():
         # comment 를 바로 저장하지 않고 현재 user, post_pk 정보를 넣어서 저장
-         comment = form.save(commit=False)    # 들어올 값 더 있음
+         comment = form.save(commit=False)    # 들어올 값 더 있기 때문에 잠깐 멈춰놓음
          comment.user = request.user
-         comment.post_id = post_pk
+         comment.post_id = post_pk     # 댓글의 게시물 id와 게시물 pk 맞추고 저장
          comment.save()
     return redirect('posts:list')
     
@@ -140,3 +156,12 @@ def explore(request):
         'comment_form': comment_form,
     }
     return render(request, 'posts/explore.html', context)
+    
+def hashtag(request, hash_pk):
+    hashtag = get_object_or_404(Hashtag, pk=hash_pk)
+    posts = hashtag.post_set.order_by('-pk')    # 최신글 먼저 보기
+    context = {
+        'hashtag' : hashtag,
+        'posts' : posts, 
+    }
+    return render(request, 'posts/hashtag.html', context)

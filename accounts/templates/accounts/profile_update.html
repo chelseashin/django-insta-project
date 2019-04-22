@@ -8,7 +8,7 @@
 <form action='' method='POST'>
     {% csrf_token %}
     {% bootstrap_form profile_form %}
-    {% buttons submit="수정" reset="Cancel"%} {% endbuttons %}
+    {% buttons submit="Submit" reset="Cancel"%} {% endbuttons %}
     <hr>
     <a href="{% url 'people' user.username %}" class="btn btn-info">Back</a>
 </form>

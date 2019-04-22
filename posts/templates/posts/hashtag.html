@@ -1,0 +1,27 @@
+{% extends 'base.html' %} 
+{% block content %}
+
+<h2 class="text-center my-3">{{ hashtag.content }}와 관련된 게시글</h2>
+<div class="jumbotron jumbotron-fluid text-center mb-2 text-white bg-dark">
+    <div class="container">
+        <h4 class="display-4">{{ hashtag.post_set.count }}개의 태그</h4>
+    </div>
+</div>
+<hr>
+<h3>{{ hashtag.content }}를 태그한 글</h3>
+<div class="row">
+    {% for post in posts %}
+    <div class="col-4 my-2">
+        <div class="card">
+            <img src="{{ post.image_set.first.file.url }}" class="card-img-top" alt="{{ post.image_set.first.file }}">
+            <div class="card-body">
+                <h6 class="card-title">{{ post.content }}</h6>
+                <!--나한테 좋아요한 유저들의 갯수-->
+                <p class="card-text">{{ post.like_users.count }}명이 좋아합니다</p>
+                <p class="card-text">{{ post.comment_set.count }}개의 댓글.</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

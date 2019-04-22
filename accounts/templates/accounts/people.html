@@ -21,7 +21,7 @@
 
 <!--로그인되어있으면 확인-->
 {% if people == user %}
-    <div class="text-center">
+    <div class="text-center my-2">
         <a href="{% url 'accounts:update' %}" class="badge badge-info">정보수정</a>
         <a href="{% url 'accounts:profile_update' %}" class="badge badge-success">프로필수정</a>
         <a href="{% url 'accounts:change_password' %}" class="badge badge-warning">비밀번호 변경</a>
