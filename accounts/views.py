@@ -92,6 +92,7 @@ def change_password(request):
     context = {'password_change_form': password_change_form, }
     return render(request, 'accounts/change_password.html', context)
     
+# 프로필 1:1
 @login_required
 def profile_update(request):
     profile = Profile.objects.get_or_create(user=request.user)
@@ -105,6 +106,7 @@ def profile_update(request):
     context = {'profile_form': profile_form, }
     return render(request, 'accounts/profile_update.html', context)
     
+# 팔로우 M:N
 @login_required
 def follow(request, user_pk):
     people = get_object_or_404(get_user_model(), pk=user_pk)
